@@ -5,7 +5,6 @@ import school.hei.haapi.model.Group;
 
 @Component
 public class GroupMapper {
-
   public school.hei.haapi.endpoint.rest.model.Group toRest(Group group) {
     var restGroup = new school.hei.haapi.endpoint.rest.model.Group();
     restGroup.setId(group.getId());

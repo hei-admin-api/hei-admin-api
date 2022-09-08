@@ -33,7 +33,6 @@ import static school.hei.haapi.integration.conf.TestUtils.anAvailableRandomPort;
 @ContextConfiguration(initializers = SpringSecurityIT.ContextInitializer.class)
 @AutoConfigureMockMvc
 class SpringSecurityIT {
-
   @MockBean
   private SentryConf sentryConf;
 
