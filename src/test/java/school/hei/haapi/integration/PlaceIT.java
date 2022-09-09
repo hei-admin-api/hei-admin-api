@@ -1,6 +1,5 @@
 package school.hei.haapi.integration;
 
-import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import school.hei.haapi.SentryConf;
+import school.hei.haapi.endpoint.rest.api.EventApi;
 import school.hei.haapi.endpoint.rest.api.TeachingApi;
 import school.hei.haapi.endpoint.rest.client.ApiClient;
 import school.hei.haapi.endpoint.rest.client.ApiException;
@@ -17,21 +17,14 @@ import school.hei.haapi.endpoint.rest.model.Group;
 import school.hei.haapi.endpoint.rest.security.cognito.CognitoComponent;
 import school.hei.haapi.integration.conf.AbstractContextInitializer;
 import school.hei.haapi.integration.conf.TestUtils;
+import school.hei.haapi.model.Place;
 
 import static java.util.UUID.randomUUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static school.hei.haapi.integration.conf.TestUtils.BAD_TOKEN;
-import static school.hei.haapi.integration.conf.TestUtils.GROUP1_ID;
-import static school.hei.haapi.integration.conf.TestUtils.MANAGER1_TOKEN;
-import static school.hei.haapi.integration.conf.TestUtils.STUDENT1_TOKEN;
-import static school.hei.haapi.integration.conf.TestUtils.TEACHER1_TOKEN;
-import static school.hei.haapi.integration.conf.TestUtils.anAvailableRandomPort;
-import static school.hei.haapi.integration.conf.TestUtils.assertThrowsForbiddenException;
-import static school.hei.haapi.integration.conf.TestUtils.isValidUUID;
-import static school.hei.haapi.integration.conf.TestUtils.setUpCognito;
+import static school.hei.haapi.integration.conf.TestUtils.*;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Testcontainers
@@ -49,30 +42,31 @@ public class PlaceIT {
         return TestUtils.anApiClient(token, ContextInitializer.SERVER_PORT);
     }
 
-    public static Group group1() {
-        Group group = new Group();
-        group.setId("group1_id");
-        group.setName("Name of group one");
-        group.setRef("GRP21001");
-        group.setCreationDatetime(Instant.parse("2021-11-08T08:25:24.00Z"));
-        return group;
+    public Place place1(){
+        Place place = new Place();
+        place.setId("place1_id");
+        place.setName("Ivandry");
+
+        return place;
+    }
+    public static Place place2(){
+        Place place = new Place();
+        place.setId("place2_id");
+        place.setName("Alliance française Andavamamba");
+        return place;
     }
 
-    public static Group group2() {
-        Group group = new Group();
-        group.setId("group2_id");
-        group.setName("Name of group two");
-        group.setRef("GRP21002");
-        group.setCreationDatetime(Instant.parse("2021-11-08T08:30:24.00Z"));
-        return group;
+
+
+
+    public  static school.hei.haapi.endpoint.rest.model.Place someCreatablePlace() {
+        school.hei.haapi.endpoint.rest.model.Place place1= new school.hei.haapi.endpoint.rest.model.Place();
+        place1.setName("Some name");
+       place1.setId("LOC21-" + randomUUID());
+       return place1;
     }
 
-    public static Group someCreatableGroup() {
-        Group group = new Group();
-        group.setName("Some name");
-        group.setRef("GRP21-" + randomUUID());
-        return group;
-    }
+
 
     @BeforeEach
     public void setUp() {
@@ -83,69 +77,66 @@ public class PlaceIT {
     void badtoken_read_ko() {
         ApiClient anonymousClient = anApiClient(BAD_TOKEN);
 
-        TeachingApi api = new TeachingApi(anonymousClient);
-        assertThrowsForbiddenException(api::getGroups);
+        EventApi api = new EventApi(anonymousClient);
+        assertThrowsForbiddenException(api::getPlaces);
     }
 
     @Test
     void badtoken_write_ko() {
         ApiClient anonymousClient = anApiClient(BAD_TOKEN);
 
-        TeachingApi api = new TeachingApi(anonymousClient);
-        assertThrowsForbiddenException(() -> api.createOrUpdateGroups(List.of()));
+        EventApi api = new EventApi(anonymousClient);
+        assertThrowsForbiddenException(() -> api.createOrUpdatePlaces(new school.hei.haapi.endpoint.rest.model.Place()));
     }
 
     @Test
     void student_read_ok() throws ApiException {
         ApiClient student1Client = anApiClient(STUDENT1_TOKEN);
 
-        TeachingApi api = new TeachingApi(student1Client);
-        Group actual1 = api.getGroupById(GROUP1_ID);
-        List<Group> actualGroups = api.getGroups();
+       EventApi api = new EventApi(student1Client);
+        school.hei.haapi.endpoint.rest.model.Place actual1 = api.getPlaceById(PLACE1_ID);
+        List<school.hei.haapi.endpoint.rest.model.Place> actualPlace = api.getPlaces();
 
-        assertEquals(group1(), actual1);
-        assertTrue(actualGroups.contains(group1()));
-        assertTrue(actualGroups.contains(group2()));
+        assertEquals(place1(), actual1);
+        assertTrue(actualPlace.contains(place1()));
+        assertTrue(actualPlace.contains(place2()));
     }
 
     @Test
     void student_write_ko() {
         ApiClient student1Client = anApiClient(STUDENT1_TOKEN);
 
-        TeachingApi api = new TeachingApi(student1Client);
-        assertThrowsForbiddenException(() -> api.createOrUpdateGroups(List.of()));
+        EventApi api = new EventApi(student1Client);
+        assertThrowsForbiddenException(() -> api.createOrUpdatePlaces(someCreatablePlace()));
     }
 
     @Test
     void teacher_write_ko() {
         ApiClient teacher1Client = anApiClient(TEACHER1_TOKEN);
 
-        TeachingApi api = new TeachingApi(teacher1Client);
-        assertThrowsForbiddenException(() -> api.createOrUpdateGroups(List.of()));
+        EventApi api = new EventApi(teacher1Client);
+        assertThrowsForbiddenException(() -> api.createOrUpdatePlaces(someCreatablePlace()));
     }
 
     @Test
     void manager_write_create_ok() throws ApiException {
         ApiClient manager1Client = anApiClient(MANAGER1_TOKEN);
-        Group toCreate3 = someCreatableGroup();
-        Group toCreate4 = someCreatableGroup();
+        school.hei.haapi.endpoint.rest.model.Place toCreate3 = someCreatablePlace();
+        school.hei.haapi.endpoint.rest.model.Place toCreate4 = someCreatablePlace();
 
-        TeachingApi api = new TeachingApi(manager1Client);
-        List<Group> created = api.createOrUpdateGroups(List.of(toCreate3, toCreate4));
+        EventApi api = new EventApi(manager1Client);
+        List<Place> created = api.createOrUpdatePlacesWithHttpInfo(List.of(toCreate3,toCreate4));
 
         assertEquals(2, created.size());
-        Group created3 = created.get(0);
+        Place created3 = created.get(0);
         assertTrue(isValidUUID(created3.getId()));
         toCreate3.setId(created3.getId());
-        assertNotNull(created3.getCreationDatetime());
-        toCreate3.setCreationDatetime(created3.getCreationDatetime());
+
         //
         assertEquals(created3, toCreate3);
-        Group created4 = created.get(0);
+        Place created4 = created.get(0);
         assertTrue(isValidUUID(created4.getId()));
         toCreate4.setId(created4.getId());
-        assertNotNull(created4.getCreationDatetime());
-        toCreate4.setCreationDatetime(created4.getCreationDatetime());
         assertEquals(created4, toCreate3);
     }
 
