@@ -9,6 +9,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import school.hei.haapi.SentryConf;
 import school.hei.haapi.endpoint.rest.api.TeachingApi;
+import school.hei.haapi.endpoint.rest.api.UsersApi;
 import school.hei.haapi.endpoint.rest.client.ApiClient;
 import school.hei.haapi.endpoint.rest.client.ApiException;
 import school.hei.haapi.endpoint.rest.model.Course;
@@ -44,7 +45,7 @@ public class CourseIT {
         course.setTotalHours(100);
         return course;
     }
-    public static Course course2(){
+    public Course course2(){
         Course course = new Course();
         course.setId("2");
         course.setName("WEB");
@@ -53,7 +54,7 @@ public class CourseIT {
         course.setTotalHours(100);
         return course;
     }
-    public static Course course3(){
+    public Course course3(){
         Course course = new Course();
         course.setId("3");
         course.setName("SYS");
@@ -106,8 +107,9 @@ public class CourseIT {
     void student_write_ko() {
         ApiClient student1Client = anApiClient(STUDENT1_TOKEN);
 
+
         TeachingApi api = new TeachingApi(student1Client);
-        assertThrowsForbiddenException(() -> api.createOrUpdateGroups(List.of()));
+        assertThrowsForbiddenException(() -> api.createOrUpdateCourses(course2()));
     }
 
     @Test
