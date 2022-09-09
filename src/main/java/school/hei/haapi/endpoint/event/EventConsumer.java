@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import school.hei.haapi.endpoint.event.model.TypedEvent;
+import software.amazon.awssdk.regions.servicemetadata.RekognitionServiceMetadata;
 
 import static java.util.concurrent.Executors.newFixedThreadPool;
 
@@ -20,6 +21,7 @@ public class EventConsumer implements Consumer<List<EventConsumer.Acknowledgeabl
     @Getter
     private final TypedEvent typedEvent;
     private final Runnable acknowledger;
+
 
     public void ack() {
       acknowledger.run();
