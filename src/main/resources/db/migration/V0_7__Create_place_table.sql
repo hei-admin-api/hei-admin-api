@@ -4,6 +4,5 @@ create table if not exists "place"
 (
     id                varchar
     constraint place_pk primary key                 default uuid_generate_v4(),
-    name              varchar                  not null,
-    constraint place_ref_unique unique
-    );
+    name              varchar                  not null
+);

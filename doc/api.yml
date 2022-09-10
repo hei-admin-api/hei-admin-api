@@ -552,7 +552,38 @@ paths:
             $ref: '#/components/responses/429'
           '500':
             $ref: '#/components/responses/500'
-  /places/{id}':
+      put:
+        tags:
+          - Event
+        summary: Create new places or update existing places
+        description: Update Places when id are provided, create them otherwise.
+        operationId: createOrUpdatePlaces
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Place'
+        responses:
+          '200':
+            description: The created or updated places
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Place'
+          '400':
+            $ref: '#/components/responses/400'
+          '403':
+            $ref: '#/components/responses/403'
+          '404':
+            $ref: '#/components/responses/404'
+          '429':
+            $ref: '#/components/responses/429'
+          '500':
+            $ref: '#/components/responses/500'
+  /places/{id}:
     get:
       tags:
         - Event
@@ -824,6 +855,7 @@ paths:
           $ref: '#/components/responses/429'
         '500':
           $ref: '#/components/responses/500'
+
   /delay_penalty_change:
     post:
       tags:
