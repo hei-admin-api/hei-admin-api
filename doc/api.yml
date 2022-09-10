@@ -1264,9 +1264,11 @@ components:
         end_date:
           type: string
           format: date-time
-        event_participant:
-          allOf:
-            - $ref: '#/components/schemas/EventParticipant'
+        event_participants:
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/EventParticipant'
     EventParticipant:
       type: object
       properties:
