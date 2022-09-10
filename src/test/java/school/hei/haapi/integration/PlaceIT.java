@@ -86,7 +86,8 @@ public class PlaceIT {
         ApiClient anonymousClient = anApiClient(BAD_TOKEN);
 
         EventApi api = new EventApi(anonymousClient);
-        assertThrowsForbiddenException(() -> api.createOrUpdatePlaces(new school.hei.haapi.endpoint.rest.model.Place()));
+
+        assertThrowsForbiddenException(api::getPlaces);
     }
 
     @Test
@@ -107,7 +108,7 @@ public class PlaceIT {
         ApiClient student1Client = anApiClient(STUDENT1_TOKEN);
 
         EventApi api = new EventApi(student1Client);
-        assertThrowsForbiddenException(() -> api.createOrUpdatePlaces(someCreatablePlace()));
+        assertThrowsForbiddenException(() -> api.createOrUpdatePlaces(List.of()));
     }
 
     @Test
@@ -115,7 +116,7 @@ public class PlaceIT {
         ApiClient teacher1Client = anApiClient(TEACHER1_TOKEN);
 
         EventApi api = new EventApi(teacher1Client);
-        assertThrowsForbiddenException(() -> api.createOrUpdatePlaces(someCreatablePlace()));
+        assertThrowsForbiddenException(() -> api.createOrUpdatePlaces(List.of()));
     }
 
     @Test
@@ -125,16 +126,16 @@ public class PlaceIT {
         school.hei.haapi.endpoint.rest.model.Place toCreate4 = someCreatablePlace();
 
         EventApi api = new EventApi(manager1Client);
-        List<Place> created = api.createOrUpdatePlacesWithHttpInfo(List.of(toCreate3,toCreate4));
+        List<school.hei.haapi.endpoint.rest.model.Place> created = (List<school.hei.haapi.endpoint.rest.model.Place>) api.createOrUpdatePlacesWithHttpInfo(List.of(toCreate3,toCreate4));
 
         assertEquals(2, created.size());
-        Place created3 = created.get(0);
+        school.hei.haapi.endpoint.rest.model.Place created3 = created.get(0);
         assertTrue(isValidUUID(created3.getId()));
         toCreate3.setId(created3.getId());
 
         //
         assertEquals(created3, toCreate3);
-        Place created4 = created.get(0);
+        school.hei.haapi.endpoint.rest.model.Place created4 = created.get(0);
         assertTrue(isValidUUID(created4.getId()));
         toCreate4.setId(created4.getId());
         assertEquals(created4, toCreate3);
@@ -143,16 +144,16 @@ public class PlaceIT {
     @Test
     void manager_write_update_ok() throws ApiException {
         ApiClient manager1Client = anApiClient(MANAGER1_TOKEN);
-        TeachingApi api = new TeachingApi(manager1Client);
-        List<Group> toUpdate = api.createOrUpdateGroups(List.of(
-                someCreatableGroup(),
-                someCreatableGroup()));
-        Group toUpdate0 = toUpdate.get(0);
+        EventApi api = new EventApi(manager1Client);
+        List<school.hei.haapi.endpoint.rest.model.Place> toUpdate = (List<school.hei.haapi.endpoint.rest.model.Place>) api.createOrUpdatePlaces(List.of(
+                someCreatablePlace(),
+                someCreatablePlace()));
+        school.hei.haapi.endpoint.rest.model.Place toUpdate0 = toUpdate.get(0);
         toUpdate0.setName("A new name zero");
-        Group toUpdate1 = toUpdate.get(1);
+        school.hei.haapi.endpoint.rest.model.Place toUpdate1 = toUpdate.get(1);
         toUpdate1.setName("A new name one");
 
-        List<Group> updated = api.createOrUpdateGroups(toUpdate);
+        List<Place> updated = (List<Place>) api.createOrUpdatePlaces(toUpdate);
 
         assertEquals(2, updated.size());
         assertTrue(updated.contains(toUpdate0));

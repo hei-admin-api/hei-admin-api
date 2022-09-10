@@ -1,10 +1,7 @@
 package school.hei.haapi.endpoint.rest.controller;
 
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import school.hei.haapi.endpoint.rest.mapper.CourseMapper;
 import school.hei.haapi.endpoint.rest.mapper.PlaceMapper;
 import school.hei.haapi.model.Place;
@@ -15,6 +12,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @AllArgsConstructor
+@CrossOrigin
 public class PlaceController {
     private PlaceService placeService;
 
