@@ -1,8 +1,9 @@
+
 create extension if not exists "uuid-ossp";
 
-create table if not exists "place"
-(
+create table if not exists "place" (
     id                varchar
     constraint place_pk primary key                 default uuid_generate_v4(),
-    name              varchar                  not null
-);
+    name              varchar                  not null,
+    constraint place_ref_unique unique
+    );
