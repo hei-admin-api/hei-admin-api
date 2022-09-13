@@ -31,4 +31,6 @@ public class Place {
 
     @NotBlank(message = "name is mandatory")
     private String name;
+
+    private String address;
 }

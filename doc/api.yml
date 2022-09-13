@@ -572,7 +572,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Place'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Place'
         '400':
           $ref: '#/components/responses/400'
         '403':
@@ -1256,6 +1258,9 @@ components:
         name:
           type: string
           example: Ivandry
+        address:
+          type: string
+          example: Lot II J 161 R Ambodivoanjo Ivandry Antananarivo, 101
     Event:
       type: object
       properties:

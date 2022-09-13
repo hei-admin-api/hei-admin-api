@@ -1,6 +1,7 @@
 package school.hei.haapi.integration;
 
 import java.util.List;
+import com.github.javafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -12,10 +13,10 @@ import school.hei.haapi.SentryConf;
 import school.hei.haapi.endpoint.rest.api.PlaceApi;
 import school.hei.haapi.endpoint.rest.client.ApiClient;
 import school.hei.haapi.endpoint.rest.client.ApiException;
+import school.hei.haapi.endpoint.rest.model.Place;
 import school.hei.haapi.endpoint.rest.security.cognito.CognitoComponent;
 import school.hei.haapi.integration.conf.AbstractContextInitializer;
 import school.hei.haapi.integration.conf.TestUtils;
-import school.hei.haapi.model.Place;
 
 import static java.util.UUID.randomUUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,31 +40,31 @@ public class PlaceIT {
         return TestUtils.anApiClient(token, ContextInitializer.SERVER_PORT);
     }
 
-    public Place place1(){
-        Place place = new Place();
+    public school.hei.haapi.endpoint.rest.model.Place place1(){
+        school.hei.haapi.endpoint.rest.model.Place place = new school.hei.haapi.endpoint.rest.model.Place();
         place.setId("place1_id");
         place.setName("Ivandry");
+        place.setAddress("II J 161 R Ambodivoanjo Ivandry Antananarivo, 101");
 
         return place;
     }
-    public static Place place2(){
-        Place place = new Place();
+    public school.hei.haapi.endpoint.rest.model.Place place2(){
+        school.hei.haapi.endpoint.rest.model.Place place = new school.hei.haapi.endpoint.rest.model.Place();
         place.setId("place2_id");
-        place.setName("Alliance française Andavamamba");
+        place.setName("Alliance Française");
+        place.setAddress("Andavamamba");
+
         return place;
     }
-
-
-
 
     public  static school.hei.haapi.endpoint.rest.model.Place someCreatablePlace() {
-        school.hei.haapi.endpoint.rest.model.Place place1= new school.hei.haapi.endpoint.rest.model.Place();
-        place1.setName("Some name");
-       place1.setId("LOC21-" + randomUUID());
-       return place1;
+        Faker faker = new Faker();
+        school.hei.haapi.endpoint.rest.model.Place place = new school.hei.haapi.endpoint.rest.model.Place();
+        place.setName("Place_" + faker.number());
+        place.setId("Place_" + randomUUID());
+        place.setAddress(faker.address().toString());
+        return place;
     }
-
-
 
     @BeforeEach
     public void setUp() {
@@ -105,6 +106,7 @@ public class PlaceIT {
         ApiClient student1Client = anApiClient(STUDENT1_TOKEN);
 
         PlaceApi api = new PlaceApi(student1Client);
+
         assertThrowsForbiddenException(() -> api.createOrUpdatePlaces(List.of()));
     }
 
@@ -115,48 +117,51 @@ public class PlaceIT {
         PlaceApi api = new PlaceApi(teacher1Client);
         assertThrowsForbiddenException(() -> api.createOrUpdatePlaces(List.of()));
     }
-    /*
+
     @Test
-    void manager_write_create_ok() throws ApiException {
-        ApiClient manager1Client = anApiClient(MANAGER1_TOKEN);
-        school.hei.haapi.endpoint.rest.model.Place toCreate3 = someCreatablePlace();
-        school.hei.haapi.endpoint.rest.model.Place toCreate4 = someCreatablePlace();
+    void teacher_read_ok() throws ApiException {
+        ApiClient student1Client = anApiClient(TEACHER1_TOKEN);
 
-        PlaceApi api = new PlaceApi(manager1Client);
-        List<school.hei.haapi.endpoint.rest.model.Place> created = (List<school.hei.haapi.endpoint.rest.model.Place>) api.createOrUpdatePlacesWithHttpInfo(List.of(toCreate3,toCreate4));
+        PlaceApi api = new PlaceApi(student1Client);
+        school.hei.haapi.endpoint.rest.model.Place actual1 = api.getPlaceById(PLACE1_ID);
+        List<school.hei.haapi.endpoint.rest.model.Place> actualPlace = api.getPlaces();
 
-        assertEquals(2, created.size());
-        school.hei.haapi.endpoint.rest.model.Place created3 = created.get(0);
-        assertTrue(isValidUUID(created3.getId()));
-        toCreate3.setId(created3.getId());
-
-        //
-        assertEquals(created3, toCreate3);
-        school.hei.haapi.endpoint.rest.model.Place created4 = created.get(0);
-        assertTrue(isValidUUID(created4.getId()));
-        toCreate4.setId(created4.getId());
-        assertEquals(created4, toCreate3);
+        assertEquals(place1(), actual1);
+        assertTrue(actualPlace.contains(place1()));
+        assertTrue(actualPlace.contains(place2()));
     }
-    /*
-    @Test
-    void manager_write_update_ok() throws ApiException {
-        ApiClient manager1Client = anApiClient(MANAGER1_TOKEN);
-        PlaceApi api = new PlaceApi(manager1Client);
-        List<school.hei.haapi.endpoint.rest.model.Place> toUpdate = (List<school.hei.haapi.endpoint.rest.model.Place>) api.createOrUpdatePlaces(List.of(
-                someCreatablePlace(),
-                someCreatablePlace()));
-        school.hei.haapi.endpoint.rest.model.Place toUpdate0 = toUpdate.get(0);
-        toUpdate0.setName("A new name zero");
-        school.hei.haapi.endpoint.rest.model.Place toUpdate1 = toUpdate.get(1);
-        toUpdate1.setName("A new name one");
 
-        List<Place> updated = (List<Place>) api.createOrUpdatePlaces(toUpdate);
+    @Test
+    void manager_write_ok() throws ApiException {
+        ApiClient manager1Client = anApiClient(MANAGER1_TOKEN);
+
+        PlaceApi api = new PlaceApi(manager1Client);
+        List<Place> toUpdate =
+                api.createOrUpdatePlaces(List.of(someCreatablePlace(), someCreatablePlace()));
+        Place toUpdate0 = toUpdate.get(0);
+        toUpdate0.setName("A new name zero");
+        Place toUpdate1 = toUpdate.get(1);
+        toUpdate1.setName("A new name one");
+        List<Place> updated = api.createOrUpdatePlaces(toUpdate);
 
         assertEquals(2, updated.size());
         assertTrue(updated.contains(toUpdate0));
         assertTrue(updated.contains(toUpdate1));
     }
-    */
+
+    @Test
+    void manager_read_ok() throws ApiException {
+        ApiClient student1Client = anApiClient(MANAGER1_TOKEN);
+
+        PlaceApi api = new PlaceApi(student1Client);
+        school.hei.haapi.endpoint.rest.model.Place actual1 = api.getPlaceById(PLACE1_ID);
+        List<school.hei.haapi.endpoint.rest.model.Place> actualPlace = api.getPlaces();
+
+        assertEquals(place1(), actual1);
+        assertTrue(actualPlace.contains(place1()));
+        assertTrue(actualPlace.contains(place2()));
+    }
+
     static class ContextInitializer extends AbstractContextInitializer {
         public static final int SERVER_PORT = anAvailableRandomPort();
 
