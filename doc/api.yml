@@ -530,7 +530,7 @@ paths:
   /places:
     get:
       tags:
-        - Event
+        - Place
       summary: Get all place
       operationId: getPlaces
       responses:
@@ -554,7 +554,7 @@ paths:
           $ref: '#/components/responses/500'
     put:
       tags:
-        - Event
+        - Place
       summary: Create new places or update existing places
       description: Update Places when id are provided, create them otherwise.
       operationId: createOrUpdatePlaces
@@ -586,7 +586,7 @@ paths:
   /places/{id}:
     get:
       tags:
-        - Event
+        - Place
       summary: Get place by identifier
       parameters:
         - name: id
@@ -612,39 +612,10 @@ paths:
           $ref: '#/components/responses/429'
         '500':
           $ref: '#/components/responses/500'
-    put:
-      tags:
-        - Event
-      summary: Create new places or update existing places
-      description: Update Places when id are provided, create them otherwise.
-      operationId: createOrUpdatePlaces
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Place'
-      responses:
-        '200':
-          description: The created or updated places
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Place'
-        '400':
-          $ref: '#/components/responses/400'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-        '429':
-          $ref: '#/components/responses/429'
-        '500':
-          $ref: '#/components/responses/500'
   /events:
     get:
       tags:
-        - Event
+        - Place
       summary: Get all events
       operationId: getEvents
       responses:
@@ -668,7 +639,7 @@ paths:
           $ref: '#/components/responses/500'
     put:
       tags:
-        - Event
+        - Place
       summary: Create new or update events
       description: Create or update events when an array of events is provided
       operationId: createOrUpdateEvents
@@ -702,7 +673,7 @@ paths:
   /events/{id}:
     get:
       tags:
-        - Event
+        - Place
       summary: Get event by id
       parameters:
         - name: id
@@ -730,10 +701,16 @@ paths:
           $ref: '#/components/responses/500'
     put:
       tags:
-        - Event
+        - Place
       summary: Create new or update an event
       description: Update event when id is provided, create otherwise.
       operationId: createOrUpdateEvent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
       requestBody:
         required: true
         content:
@@ -759,7 +736,7 @@ paths:
           $ref: '#/components/responses/500'
     delete:
       tags:
-        - Event
+        - Place
       summary: Delete event by id
       parameters:
         - name: id
@@ -788,7 +765,7 @@ paths:
   /events/{id}/eventParticipants:
     get:
       tags:
-        - Event
+        - Place
       summary: Get event participants of an event when id is provided
       parameters:
         - name: id
@@ -817,7 +794,7 @@ paths:
   /events/{event_id}/eventParticipants/{id}:
     put:
       tags:
-        - Event
+        - Place
       summary: Update an event participant
       description: Update an event participant when id is provided.
       operationId: UpdateEventParticipant
@@ -1424,10 +1401,11 @@ components:
       type: integer
       description: Cannot exceed `500`
     OK:
-      type: object
-      properties:
-        message:
-          type: OK
+      allOf:
+        - $ref: '#/components/schemas/Exception'
+      example:
+        type: OK
+        message: OK
     Exception:
       type: object
       properties:
