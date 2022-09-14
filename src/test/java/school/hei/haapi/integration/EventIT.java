@@ -2,6 +2,8 @@ package school.hei.haapi.integration;
 
 import java.time.Instant;
 import java.util.List;
+
+import com.github.javafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -14,13 +16,10 @@ import school.hei.haapi.endpoint.rest.api.PlaceApi;
 import school.hei.haapi.endpoint.rest.client.ApiClient;
 import school.hei.haapi.endpoint.rest.client.ApiException;
 import school.hei.haapi.endpoint.rest.model.Event;
-import school.hei.haapi.endpoint.rest.model.EventParticipant;
-import school.hei.haapi.endpoint.rest.model.Place;
 import school.hei.haapi.endpoint.rest.security.cognito.CognitoComponent;
 import school.hei.haapi.integration.conf.AbstractContextInitializer;
 import school.hei.haapi.integration.conf.TestUtils;
 
-import static java.util.UUID.randomUUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -55,10 +54,10 @@ public class EventIT {
         Event event = new Event();
         event.setId("event1_id");
         event.setName("Name of event one");
-        event.setPlace(PlaceIT.place2());
+        event.setPlace(PlaceIT.place1());
         event.setStartDate(Instant.parse("2022-09-08T08:00:00.00Z"));
         event.setEndDate(Instant.parse("2022-09-08T10:00:00.00Z"));
-        event.setEventParticipants();
+        event.setEventParticipants(List.of(EventParticipantIT.eventParticipant1(),EventParticipantIT.eventParticipant2()));
         return event;
     }
 
@@ -69,14 +68,19 @@ public class EventIT {
         event.setPlace(PlaceIT.place2());
         event.setStartDate(Instant.parse("2022-09-08T08:00:00.00Z"));
         event.setEndDate(Instant.parse("2022-09-08T10:00:00.00Z"));
-        event.setEventParticipants();
+        event.setEventParticipants(List.of(EventParticipantIT.eventParticipant1(),EventParticipantIT.eventParticipant2()));
         return event;
     }
 
     public static Event someCreatableEvent() {
         Event event = new Event();
-        event.setName("Some name");
-        event.setRef("GRP21-" + randomUUID());
+        Faker faker = new Faker();
+        event.setName("Event_"+ faker.number().toString());
+        event.setEndDate(Instant.parse(faker.date().toString()));
+        event.setStartDate(Instant.parse(faker.date().toString()));
+        event.setPlace(PlaceIT.someCreatablePlace());
+        event.setEventParticipants(List.of(EventParticipantIT.someCreatableEventParticipant(),
+                EventParticipantIT.someCreatableEventParticipant()));
         return event;
     }
 
@@ -123,6 +127,19 @@ public class EventIT {
     }
 
     @Test
+    void teacher_read_ok() throws ApiException {
+        ApiClient student1Client = anApiClient(TEACHER1_TOKEN);
+
+        PlaceApi api = new PlaceApi(student1Client);
+        Event actual1 = api.getEventById(GROUP1_ID);
+        List<Event> actualEvents = api.getEvents();
+
+        assertEquals(event1(), actual1);
+        assertTrue(actualEvents.contains(event1()));
+        assertTrue(actualEvents.contains(event2()));
+    }
+
+    @Test
     void teacher_write_ko() {
         ApiClient teacher1Client = anApiClient(TEACHER1_TOKEN);
 
@@ -131,7 +148,19 @@ public class EventIT {
     }
 
     @Test
-    void manager_write_create_ok() throws ApiException {
+    void manager_read_ok() throws ApiException {
+        ApiClient student1Client = anApiClient(MANAGER1_TOKEN);
+
+        PlaceApi api = new PlaceApi(student1Client);
+        Event actual1 = api.getEventById(GROUP1_ID);
+        List<Event> actualEvents = api.getEvents();
+
+        assertEquals(event1(), actual1);
+        assertTrue(actualEvents.contains(event1()));
+        assertTrue(actualEvents.contains(event2()));
+    }
+    @Test
+    void manager_write_ok() throws ApiException {
         ApiClient manager1Client = anApiClient(MANAGER1_TOKEN);
         Event toCreate3 = someCreatableEvent();
         Event toCreate4 = someCreatableEvent();
@@ -141,37 +170,13 @@ public class EventIT {
 
         assertEquals(2, created.size());
         Event created3 = created.get(0);
-        assertTrue(isValidUUID(created3.getId()));
+        assertNotNull(created3.getId());
         toCreate3.setId(created3.getId());
-        assertNotNull(created3.getCreationDatetime());
-        toCreate3.setCreationDatetime(created3.getCreationDatetime());
         //
         assertEquals(created3, toCreate3);
         Event created4 = created.get(0);
-        assertTrue(isValidUUID(created4.getId()));
         toCreate4.setId(created4.getId());
-        assertNotNull(created4.getCreationDatetime());
-        toCreate4.setCreationDatetime(created4.getCreationDatetime());
         assertEquals(created4, toCreate3);
-    }
-
-    @Test
-    void manager_write_update_ok() throws ApiException {
-        ApiClient manager1Client = anApiClient(MANAGER1_TOKEN);
-        PlaceApi api = new PlaceApi(manager1Client);
-        List<Event> toUpdate = api.createOrUpdateEvents(List.of(
-                someCreatableEvent(),
-                someCreatableEvent()));
-        Event toUpdate0 = toUpdate.get(0);
-        toUpdate0.setName("A new name zero");
-        Event toUpdate1 = toUpdate.get(1);
-        toUpdate1.setName("A new name one");
-
-        List<Event> updated = api.createOrUpdateEvents(toUpdate);
-
-        assertEquals(2, updated.size());
-        assertTrue(updated.contains(toUpdate0));
-        assertTrue(updated.contains(toUpdate1));
     }
 
     static class ContextInitializer extends AbstractContextInitializer {

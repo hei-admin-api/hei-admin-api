@@ -1,7 +1,6 @@
 package school.hei.haapi.model;
 
 import lombok.*;
-import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import school.hei.haapi.repository.types.PostgresEnumType;
 
@@ -12,6 +11,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 
+import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -31,7 +31,7 @@ public class Event implements Serializable {
     @NotBlank(message = "Name is mandatory")
     private String name;
 
-    @NotBlank(message = "Place is mandatory")
+    @ManyToOne
     private Place place;
 
     @NotBlank
@@ -40,7 +40,7 @@ public class Event implements Serializable {
     @NotBlank
     private Instant endDate;
 
-    @OneToMany
+    @OneToMany(cascade = ALL, mappedBy = "event")
     private List<EventParticipant> eventParticipants;
 
     @Override
@@ -54,9 +54,5 @@ public class Event implements Serializable {
     @Override
     public int hashCode() {
         return getClass().hashCode();
-    }
-
-    public enum Status {
-        EXPECTED, HERE, MISSING
     }
 }
