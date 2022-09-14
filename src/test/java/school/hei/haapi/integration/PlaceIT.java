@@ -12,10 +12,10 @@ import school.hei.haapi.SentryConf;
 import school.hei.haapi.endpoint.rest.api.PlaceApi;
 import school.hei.haapi.endpoint.rest.client.ApiClient;
 import school.hei.haapi.endpoint.rest.client.ApiException;
+import school.hei.haapi.endpoint.rest.model.Place;
 import school.hei.haapi.endpoint.rest.security.cognito.CognitoComponent;
 import school.hei.haapi.integration.conf.AbstractContextInitializer;
 import school.hei.haapi.integration.conf.TestUtils;
-import school.hei.haapi.model.Place;
 
 import static java.util.UUID.randomUUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,28 +39,25 @@ public class PlaceIT {
         return TestUtils.anApiClient(token, ContextInitializer.SERVER_PORT);
     }
 
-    public Place place1(){
-        Place place = new Place();
+    public static school.hei.haapi.endpoint.rest.model.Place place1(){
+        school.hei.haapi.endpoint.rest.model.Place place = new school.hei.haapi.endpoint.rest.model.Place();
         place.setId("place1_id");
         place.setName("Ivandry");
 
         return place;
     }
-    public static Place place2(){
-        Place place = new Place();
+    public static school.hei.haapi.endpoint.rest.model.Place place2(){
+        school.hei.haapi.endpoint.rest.model.Place place = new Place();
         place.setId("place2_id");
         place.setName("Alliance française Andavamamba");
         return place;
     }
 
-
-
-
     public  static school.hei.haapi.endpoint.rest.model.Place someCreatablePlace() {
         school.hei.haapi.endpoint.rest.model.Place place1= new school.hei.haapi.endpoint.rest.model.Place();
         place1.setName("Some name");
-       place1.setId("LOC21-" + randomUUID());
-       return place1;
+        place1.setId("LOC21-" + randomUUID());
+        return place1;
     }
 
 

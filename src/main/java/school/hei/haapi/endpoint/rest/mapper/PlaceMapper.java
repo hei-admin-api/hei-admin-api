@@ -8,10 +8,17 @@ import school.hei.haapi.model.Place;
 @AllArgsConstructor
 public class PlaceMapper {
 
-    public Place toRest(Place place){
-       Place place1 = new Place();
+    public school.hei.haapi.endpoint.rest.model.Place toRest(Place place){
+       school.hei.haapi.endpoint.rest.model.Place restPlace = new school.hei.haapi.endpoint.rest.model.Place();
+       restPlace.setId(place.getId());
+       restPlace.setName(place.getName());
+       return restPlace;
+    }
 
-       place1.setName(place.getName());
-       return place1;
+    public Place toDomain(school.hei.haapi.endpoint.rest.model.Place restPlace){
+        return Place.builder()
+                .id(restPlace.getId())
+                .name(restPlace.getName())
+                .build();
     }
 }

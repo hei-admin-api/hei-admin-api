@@ -2,9 +2,7 @@ package school.hei.haapi.endpoint.rest.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import school.hei.haapi.endpoint.rest.mapper.CourseMapper;
 import school.hei.haapi.endpoint.rest.mapper.PlaceMapper;
-import school.hei.haapi.model.Place;
 import school.hei.haapi.service.PlaceService;
 
 import java.util.List;
@@ -19,7 +17,7 @@ public class PlaceController {
     private PlaceMapper placeMapper;
 
     @GetMapping("/places")
-    public List<Place> getAllPlace(){
+    public List<school.hei.haapi.endpoint.rest.model.Place> getAllPlace(){
         return placeService.getAllPlaces()
                 .stream()
                 .map(place -> placeMapper.toRest(place))
@@ -27,13 +25,8 @@ public class PlaceController {
     }
 
     @GetMapping("/places/{id}")
-    public Place getPlaceById(@PathVariable String id){
+    public school.hei.haapi.endpoint.rest.model.Place getPlaceById(@PathVariable String id){
         return placeMapper.toRest(placeService.getPlacesById(id));
-    }
-
-    @GetMapping("/places/name")
-    public Place getPlaceByName(@RequestParam String name){
-        return placeService.getPlaceByName(name);
     }
 }
 

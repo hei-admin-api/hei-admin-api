@@ -780,7 +780,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Event'
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventParticipant'
         '400':
           $ref: '#/components/responses/400'
         '403':
@@ -791,19 +793,13 @@ paths:
           $ref: '#/components/responses/429'
         '500':
           $ref: '#/components/responses/500'
-  /events/{event_id}/eventParticipants/{id}:
     put:
       tags:
         - Place
       summary: Update an event participant
       description: Update an event participant when id is provided.
-      operationId: UpdateEventParticipant
+      operationId: UpdateEventParticipants
       parameters:
-        - name: event_id
-          in: path
-          required: true
-          schema:
-            type: string
         - name: id
           in: path
           required: true
@@ -814,14 +810,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EventParticipant'
+              type: array
+              items:
+                $ref: '#/components/schemas/EventParticipant'
       responses:
         '200':
           description: An event participant
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EventParticipant'
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventParticipant'
         '400':
           $ref: '#/components/responses/400'
         '403':
@@ -832,7 +832,6 @@ paths:
           $ref: '#/components/responses/429'
         '500':
           $ref: '#/components/responses/500'
-
   /delay_penalty_change:
     post:
       tags:
@@ -1283,12 +1282,12 @@ components:
       properties:
         id:
           type: string
-        role:
-          type: string
-          enum:
-            - TEACHER
-            - MANAGER
-            - STUDENT
+        user:
+          allOf:
+            - $ref: '#/components/schemas/User'
+        event:
+          allOf:
+            - $ref: '#/components/schemas/Event'
         status:
           type: string
           enum:
