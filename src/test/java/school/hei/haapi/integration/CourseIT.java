@@ -42,8 +42,8 @@ public class CourseIT {
         course.setId("1");
         course.setName("PROG");
         course.setRef("Algo");
-        course.setCredits(10);
-        course.setTotalHours(100);
+        course.setCredits(5);
+        course.setTotalHours(20);
         return course;
     }
     public Course course2(){
@@ -51,17 +51,8 @@ public class CourseIT {
         course.setId("2");
         course.setName("WEB");
         course.setRef("IHM");
-        course.setCredits(20);
-        course.setTotalHours(100);
-        return course;
-    }
-    public Course course3(){
-        Course course = new Course();
-        course.setId("3");
-        course.setName("SYS");
-        course.setRef("AWS");
-        course.setCredits(10);
-        course.setTotalHours(100);
+        course.setCredits(5);
+        course.setTotalHours(20);
         return course;
     }
     public static Course someCreatableCourse() {
