@@ -1,5 +1,5 @@
 insert into "place"
     (id,name)
-        values ('1','Ivandry'),
+        values ('place1_id','Ivandry'),
                ('place2_id','Alliance francaise Andavamamba');
 
