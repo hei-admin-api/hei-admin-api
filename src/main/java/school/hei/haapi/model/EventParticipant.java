@@ -1,16 +1,12 @@
 package school.hei.haapi.model;
 
-import java.io.Serializable;
-import javax.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import school.hei.haapi.repository.types.PostgresEnumType;
+
+import javax.persistence.*;
+import java.io.Serializable;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -28,7 +24,7 @@ public class EventParticipant implements Serializable {
     @GeneratedValue(strategy = IDENTITY)
     private String id;
 
-    @ManyToMany
+    @OneToOne
     private User user;
 
     @Type(type = "pgsql_enum")

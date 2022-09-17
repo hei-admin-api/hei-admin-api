@@ -1,6 +1,5 @@
 package school.hei.haapi.endpoint.rest.security;
 
-import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
@@ -14,13 +13,10 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import school.hei.haapi.model.exception.ForbiddenException;
 
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.OPTIONS;
-import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.http.HttpMethod.PUT;
-import static school.hei.haapi.endpoint.rest.security.model.Role.MANAGER;
-import static school.hei.haapi.endpoint.rest.security.model.Role.STUDENT;
-import static school.hei.haapi.endpoint.rest.security.model.Role.TEACHER;
+import javax.servlet.http.HttpServletRequest;
+
+import static org.springframework.http.HttpMethod.*;
+import static school.hei.haapi.endpoint.rest.security.model.Role.*;
 
 @Configuration
 @Slf4j
@@ -63,16 +59,17 @@ public class SecurityConf extends WebSecurityConfigurerAdapter {
             bearerFilter(new NegatedRequestMatcher(
                 new OrRequestMatcher(
                     new AntPathRequestMatcher("/ping"),
-                    new AntPathRequestMatcher("/**", OPTIONS.toString())
+                        new AntPathRequestMatcher("/**", OPTIONS.toString())
                 )
             )),
-            AnonymousAuthenticationFilter.class)
-        .anonymous()
+                AnonymousAuthenticationFilter.class)
+            .anonymous()
 
-        // authorize
-        .and()
-        .authorizeRequests()
-        .antMatchers("/ping").permitAll()
+            // authorize
+            .and()
+            .authorizeRequests()
+            .antMatchers("/ping").permitAll()
+            .antMatchers("/events").permitAll()
         .antMatchers(OPTIONS, "/**").permitAll()
         .antMatchers("/whoami").authenticated()
         .antMatchers(GET, "/students").hasAnyRole(TEACHER.getRole(), MANAGER.getRole())

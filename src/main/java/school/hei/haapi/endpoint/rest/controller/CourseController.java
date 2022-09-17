@@ -3,11 +3,8 @@ package school.hei.haapi.endpoint.rest.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import school.hei.haapi.endpoint.rest.mapper.CourseMapper;
-import school.hei.haapi.endpoint.rest.mapper.GroupMapper;
 import school.hei.haapi.endpoint.rest.model.Course;
-import school.hei.haapi.endpoint.rest.model.Group;
 import school.hei.haapi.service.CourseService;
-import school.hei.haapi.service.GroupService;
 
 import java.util.List;
 
@@ -24,14 +21,14 @@ public class CourseController {
     }
 
     @GetMapping(value = "/course")
-    public List<Course> getGroups() {
+    public List<Course> getCourse() {
         return courseService.getAll().stream()
                 .map(courseMapper::toRest)
                 .collect(toUnmodifiableList());
     }
 
     @PutMapping(value = "/course")
-    public List<Course> createOrUpdateGroups(@RequestBody List<Course> toWrite) {
+    public List<Course> createOrUpdateCourse(@RequestBody List<Course> toWrite) {
         var saved = courseService.saveAll(toWrite.stream()
                 .map(courseMapper::toDomain)
                 .collect(toUnmodifiableList()));

@@ -41,6 +41,7 @@ public class Event implements Serializable {
     private Instant endDate;
 
     @OneToMany(cascade = ALL, mappedBy = "event")
+    @ToString.Exclude
     private List<EventParticipant> eventParticipants;
 
     @Override
