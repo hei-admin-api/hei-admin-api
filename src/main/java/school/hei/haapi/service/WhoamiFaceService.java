@@ -9,14 +9,9 @@ import com.amazonaws.services.rekognition.model.CompareFacesRequest;
 import com.amazonaws.services.rekognition.model.CompareFacesResult;
 import com.amazonaws.services.rekognition.model.ComparedFace;
 import java.util.List;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
-import com.amazonaws.util.IOUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import school.hei.haapi.model.EventParticipant;
 import school.hei.haapi.repository.EventParticipantRepository;
 
 @Service
@@ -27,7 +22,6 @@ public class WhoamiFaceService {
     public static boolean compareFacesS3(byte[] source, byte[] target){
 
         Float similarityThreshold = 70F;
-        //Replace sourceFile and targetFile with the image files you want to compare.
         String sourceImage = "sourceImage";
         String targetImage = "targetImage";
         ByteBuffer sourceImageBytes=null;
@@ -35,7 +29,6 @@ public class WhoamiFaceService {
 
         AmazonRekognition rekognitionClient = AmazonRekognitionClientBuilder.defaultClient();
 
-        //Load source and target images and create input parameters
         try {
             sourceImageBytes = ByteBuffer.wrap(source);
         }

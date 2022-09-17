@@ -15,13 +15,11 @@ import java.io.IOException;
 @RestController
 public class WhoamiFaceController {
 
-
   @PostMapping(value="/whoamiface", consumes = {MediaType.IMAGE_JPEG_VALUE})
   public Whoami uploadImage(@RequestBody byte[] imgByte, @AuthenticationPrincipal Principal principal) throws IOException {
     ByteArrayInputStream inpByte = new ByteArrayInputStream(imgByte);
     BufferedImage bufferImg = ImageIO.read(inpByte);
     ByteArrayOutputStream temp = new ByteArrayOutputStream();
-    //ImageIO.write(bufferImg, "jpg", temp);
     byte[] result = temp.toByteArray();
 
     Whoami whoami = new Whoami();
