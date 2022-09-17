@@ -13,15 +13,19 @@ public class PlaceService {
 
     private final PlaceRepository placeRepository;
 
-    public List<Place> getAllPlaces(){
+    public List<Place> getAllPlaces() {
         return placeRepository.findAll();
     }
 
-    public Place getPlacesById(String id){
+    public Place getPlacesById(String id) {
         return placeRepository.getById(id);
     }
 
-    public Place getPlaceByName(String name){
+    public List<Place> addPlaces(List<Place> places) {
+        return placeRepository.saveAll(places);
+    }
+
+    public Place getPlaceByName(String name) {
         return placeRepository.findByNameContainingIgnoreCase(name);
     }
 }
