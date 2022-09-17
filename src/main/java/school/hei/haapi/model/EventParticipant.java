@@ -28,7 +28,8 @@ public class EventParticipant implements Serializable {
     @GeneratedValue(strategy = IDENTITY)
     private String id;
 
-    @ManyToMany
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Type(type = "pgsql_enum")

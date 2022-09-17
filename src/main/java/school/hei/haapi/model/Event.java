@@ -32,6 +32,7 @@ public class Event implements Serializable {
     private String name;
 
     @ManyToOne
+    @JoinColumn(name = "place_id")
     private Place place;
 
     @NotBlank
