@@ -14,36 +14,38 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import com.amazonaws.util.IOUtils;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+import school.hei.haapi.model.EventParticipant;
+import school.hei.haapi.repository.EventParticipantRepository;
 
-
+@Service
+@AllArgsConstructor
 public class WhoamiFaceService {
 
-    public void WhoamiFace(byte[] image){
-
-    }
-
-    public boolean compareFacesS3(){
+    private EventParticipantRepository eventParticipantRepository;
+    public static boolean compareFacesS3(byte[] source, byte[] target){
 
         Float similarityThreshold = 70F;
         //Replace sourceFile and targetFile with the image files you want to compare.
-        String sourceImage = "source.jpg";
-        String targetImage = "target.jpg";
+        String sourceImage = "sourceImage";
+        String targetImage = "targetImage";
         ByteBuffer sourceImageBytes=null;
         ByteBuffer targetImageBytes=null;
 
         AmazonRekognition rekognitionClient = AmazonRekognitionClientBuilder.defaultClient();
 
         //Load source and target images and create input parameters
-        try (InputStream inputStream = new FileInputStream(new File(sourceImage))) {
-            sourceImageBytes = ByteBuffer.wrap(IOUtils.toByteArray(inputStream));
+        try {
+            sourceImageBytes = ByteBuffer.wrap(source);
         }
         catch(Exception e)
         {
             System.out.println("Failed to load source image " + sourceImage);
             System.exit(1);
         }
-        try (InputStream inputStream = new FileInputStream(new File(targetImage))) {
-            targetImageBytes = ByteBuffer.wrap(IOUtils.toByteArray(inputStream));
+        try {
+            targetImageBytes = ByteBuffer.wrap(target);
         }
         catch(Exception e)
         {
@@ -51,14 +53,14 @@ public class WhoamiFaceService {
             System.exit(1);
         }
 
-        Image source=new Image()
+        Image sourceI=new Image()
                 .withBytes(sourceImageBytes);
-        Image target=new Image()
+        Image targetI=new Image()
                 .withBytes(targetImageBytes);
 
         CompareFacesRequest request = new CompareFacesRequest()
-                .withSourceImage(source)
-                .withTargetImage(target)
+                .withSourceImage(sourceI)
+                .withTargetImage(targetI)
                 .withSimilarityThreshold(similarityThreshold);
 
         // Call operation
@@ -86,5 +88,21 @@ public class WhoamiFaceService {
         System.out.println("Source image rotation: " + compareFacesResult.getSourceImageOrientationCorrection());
         System.out.println("target image rotation: " + compareFacesResult.getTargetImageOrientationCorrection());
         return isThere;
+    }
+
+    public boolean isPresent(String eventParticipantId){
+        String stat;
+        boolean here;
+        here = compareFacesS3(new byte[] {}, new byte[] {});
+        if (here == true){
+            stat="HERE";
+            eventParticipantRepository.setStatus(eventParticipantId, stat);
+            return true;
+        }
+        else  {
+            stat="MISSING";
+            eventParticipantRepository.setStatus(eventParticipantId, stat);
+            return false;
+        }
     }
 }
